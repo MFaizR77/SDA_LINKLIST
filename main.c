@@ -1,34 +1,81 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "stack.h"
+#include "queue.h"
+
+#define MAX_TELLER 10
 
 int main() {
-    List L;
+    Queue antrian, Q;
+    CreateQueue(&antrian);
+    Queue teller[MAX_TELLER]; 
+    for (int i = 0; i < MAX_TELLER; i++) {
+        CreateQueue(&teller[i]);
+    }
+
+    int pilihan, nomorAntrian = 0, tellerIndex;
     infotype X;
-    int pilihan;
-    CreateEmpty(&L); 
-    
+
     do {
-        printf("\nMENU STACK LINKED LIST");
-        printf("\n1. Push (Tambah Elemen)");
-        printf("\n2. Exit");
-        printf("\nPilihan: ");
+        printf("\nMENU ANTRIAN BANK\n");
+        printf("1. Ambil Antrian\n");
+        printf("2. Proses Antrian (Masuk ke Teller)\n");
+        printf("3. Cetak Antrian\n");
+        printf("4. Cetak Antrian di Teller\n");
+        printf("5. Keluar\n");
+        printf("Pilihan: ");
         scanf("%d", &pilihan);
         
         switch (pilihan) {
             case 1:
-                printf("Masukkan elemen: ");
-                scanf("%d", &X); 
-                DecimalToBinary(X); 
-                printf("Elemen %d telah ditambahkan ke stack.\n", X);
+                if(!IsFull(antrian)){
+                    nomorAntrian++;
+                EnQueue(&antrian, nomorAntrian);
+                printf("Nomor antrian %d telah diambil.\n", nomorAntrian);
+                PrintList(antrian);
                 break;
+                } else {
+                    printf("Antrian pertama akan dipindahkan ke teller sebelum mengantri!\n");
+                }
             case 2:
-                printf("Keluar dari program.\n");
+                if (!is_Empty(antrian)) {  
+                    
+                    deQueue(&antrian, &X); 
+            
+                    tellerIndex = 0;
+                    int minQueue = 9999;
+                    for (int i = 0; i < MAX_TELLER; i++) {
+                        int count = CountElement(teller[i]);  
+                        if (count < minQueue) {
+                            minQueue = count;
+                            tellerIndex = i;
+                        }
+                    }
+            
+                    EnQueue(&teller[tellerIndex], X);
+            
+                    printf("Nomor antrian %d dipindahkan ke teller %d.\n", X, tellerIndex + 1);
+                } else {
+                    printf("Antrian kosong!\n");
+                }
                 break;
+
+            case 3:
+                PrintList(antrian);
+                break;
+
+            case 4:
+                for (int i = 0; i < MAX_TELLER; i++) {
+                    printf("Antrian di Teller %d: ", i + 1);
+                    PrintList(teller[i]);
+                }
+                break;
+
+            case 5:
+                printf("Program selesai.\n");
+                break;
+
             default:
                 printf("Pilihan tidak valid!\n");
         }
-    } while (pilihan != 2);
+    } while (pilihan != 5);
 
     return 0;
 }

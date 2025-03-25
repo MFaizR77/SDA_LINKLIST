@@ -21,19 +21,22 @@ typedef struct {
 } List;
 
 
-typedef List Stack;
+void CreateNode(address *p, infotype data);
 
+void DeAlokasi(address *p);
 
+boolean isEmpty(List L);
 
-boolean ListEmpty(List L);
-
-
-address Alokasi(infotype X);
-void DeAlokasi(address P);
+boolean IsFull(List L);
 
 void PrintList(List L);
-void InsertFirst(List *L, infotype X);
-void DelFirst(List *L, infotype *X);
-void DecimalToBinary(int n);
+
+void InsVLast(List *L, infotype X);
+void InsertLast(List *L, address P);
+
+int CountElement(List L);
+
+void DelVFirst(List *L, infotype *X);
+void DelFirst(List *L, address *P);
 
 #endif
