@@ -9,7 +9,7 @@ void CreateQueue (Queue *Q)
 /*Memeriksa apakah queue kosong */
 boolean is_Empty (Queue Q)
 {
-	 return (isEmpty(Q));
+	 return (IsListEmpty(Q));
 }
 
 /*Memeriksa apakah queue penuh */

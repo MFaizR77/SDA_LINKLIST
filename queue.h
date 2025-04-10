@@ -7,8 +7,6 @@
 
 #define MAXQueue 100
 
-typedef List Queue;
-
 /*Membuat sebuah queue baru dengan Front dan Rear NULL*/
 void CreateQueue (Queue *Q);
 

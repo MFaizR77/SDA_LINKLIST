@@ -1,4 +1,5 @@
 #include "queue.h"
+#include "stack.h"
 
 void CreateNode(address *p, infotype data) {
     *p = (address)malloc(sizeof(ElmtList));
@@ -10,6 +11,11 @@ void CreateNode(address *p, infotype data) {
     }
 }
 
+address Alokasi(infotype data) {
+    address P;
+    CreateNode(&P, data);
+    return P;
+}
 
 void DeAlokasi(address *p) {
     free(*p);
@@ -17,7 +23,7 @@ void DeAlokasi(address *p) {
 }
 
 
-boolean isEmpty(List L) {
+boolean IsListEmpty(List L) {
     return (L.First == NULL);
 }
 
@@ -42,7 +48,7 @@ void InsVLast(List *L, infotype X) {
 
 
 void InsertLast(List *L, address P) {
-    if (isEmpty(*L)) {
+    if (is_Empty(*L)) {
         L->First = P;
     } else {
         address temp = L->First;
@@ -55,22 +61,22 @@ void InsertLast(List *L, address P) {
 
 
 void DelVFirst(List *L, infotype *X) {
-    if (!isEmpty(*L)) {
-        address P = L->First;
-        *X = P->info; 
-        L->First = P->next;
-        DeAlokasi(&P);
+    if (!is_Empty(*L)) {
+        address P;
+        DelFirst(L, &P);   
+        *X = P->info;      
+        DeAlokasi(&P);     
     }
 }
 
-
 void DelFirst(List *L, address *P) {
-    if (!isEmpty(*L)) {
+    if (!is_Empty(*L)) {
         *P = L->First;
         L->First = (*P)->next;
         (*P)->next = NULL;
     }
 }
+
 
 int CountElement(List L) {
     int count = 0;
@@ -86,3 +92,46 @@ int CountElement(List L) {
 boolean IsFull(List L){
   return CountElement(L)>= MAXQueue;
 }
+
+
+void InsertFirst(List *L, infotype X) {
+    address P;
+    CreateNode(&P, X);
+    if (P != NULL) {
+        P->next = L->First;
+        L->First = P;
+    }
+}
+
+
+void CheckPalindrome(char *input) {
+    Stack S;
+    Queue Q;
+    CreateEmpty(&S);    
+    CreateQueue(&Q);
+
+    for (int i = 0; input[i] != '\0'; i++) {
+        if ((input[i] >= 'a' && input[i] <= 'z') || (input[i] >= 'A' && input[i] <= 'Z')){
+            char ch = tolower(input[i]);
+            Push(&S, ch);       
+            EnQueue(&Q, ch);    
+        }    
+    }
+    
+
+    int isPalindrom = 1;
+    infotype fromStack, fromQueue;
+
+    while (!IsEmpty(S) && !is_Empty(Q)) {
+        Pop(&S, &fromStack);
+        deQueue(&Q, &fromQueue);
+
+        if (fromStack != fromQueue) {
+            isPalindrom = 0;
+            break;
+        }
+    }
+
+    printf("\"%s\" %s palindrom.\n", input, isPalindrom ? "adalah" : "bukan");
+}
+
