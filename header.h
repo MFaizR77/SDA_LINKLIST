@@ -1,40 +1,40 @@
-#ifndef header_h
-#define header_h
-#include "boolean.h"
+#ifndef HEADER_H
+#define HEADER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define Nil NULL
-#define max_kt 10
-#define max_string 50
 
-typedef char infotype[max_string];
-typedef struct tElmtList *address;
-typedef struct tElmtList {
-	 infotype nm;
-	 address q;
-} ElmtList;
+typedef char *infotype;
 
+typedef struct tOrang *addressOrang;
+typedef struct tKota *addressKota;
 
-typedef struct {
-	  address First;
-} List;
+typedef struct tOrang {
+    infotype nm;
+    addressOrang nextOrang;
+} Orang;
 
-typedef struct {
-	infotype kt;
-	List p;
+typedef struct tKota {
+    infotype kt;
+    addressOrang listOrang;
+    addressKota nextKota;
 } Kota;
 
-extern Kota kota[max_kt];
+typedef struct {
+    addressKota First;
+} List;
 
-void CreateList(List *L);
-address Alokasi(infotype X);
-void Dealokasi(address P);
-void InsertLast(List *L, infotype X);
-void DeleteNmandKt(List *L, int *Totkota);
+
+void CreateListKota(List *L);
+addressKota AlokasiKota(infotype X);
+addressOrang AlokasiOrang(infotype X);
+void InsertLastKota(List *L, infotype namaKota);
+void InsertFirstKota(List *L, infotype namaKota);
+void InsertLastOrang(addressKota kota, infotype namaOrang);
+void InsertFirstOrang(addressKota kota, infotype namaOrang);
 void TampilList(List L);
-void initKota();
-int cariIndexKota(char *nama_kota);
-int HitungNama(List L);
+void DealokasiList(List *L);
+void HitungTotal(List L);
 
 #endif
