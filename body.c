@@ -156,14 +156,21 @@ void Level_order(Isi_Tree X, int Maks_node){
     }
 }
 
-void PrintTree (Isi_Tree P){
-    printf("Isi tree dalam Level Order:\n");
-    int i;
-    for(i = 1; i <= jml_maks; i++){
-        if(P[i].info != '\0'){
-            printf("[%d] Info: %c, fs: %d, nb: %d, pr: %d\n", i, P[i].info, P[i].ps_fs, P[i].ps_nb, P[i].ps_pr);
+void PrintTree(Isi_Tree T) {
+    printf("\nSeluruh Node pada Non Binary Tree:\n");
+    for (int i = 1; i <= jml_maks; i++) {
+        if (T[i].info != '\0') {
+            printf("\n--> Indeks ke-%d", i);
+            printf("\n------------------------------------");
+            printf("\ninfo array ke %d     :    %c", i, T[i].info);
+            printf("\nfirst son array ke %d:    %d", i, T[i].ps_fs);
+            printf("\nnext brother array ke %d: %d", i, T[i].ps_nb);
+            printf("\nparent array ke %d   :    %d", i, T[i].ps_pr);
+            printf("\n------------------------------------");
         }
     }
+    printf("\nKlik apapun untuk melanjutkan!\n");
+    getchar(); getchar();  
 }
 
 boolean Search (Isi_Tree P, infotype X){
@@ -253,3 +260,5 @@ void StartPrintVisualTree(Isi_Tree P){
         PrintVisualTree(P, 1, 0); 
     }
 }
+
+

@@ -83,4 +83,5 @@ int Max (infotype Data1, infotype Data2);
 /* Mengirimkan Nilai terbesar dari dua data */
 void StartPrintVisualTree(Isi_Tree P);
 
+
 #endif
