@@ -1,127 +1,255 @@
 #include "header.h"
+#include <stdio.h>
 
-void CreateListKota(List *L) {
-    L->First = NULL;
-}
-
-addressKota AlokasiKota(infotype X) {
-    addressKota P = (addressKota)malloc(sizeof(Kota));
-    if (P != NULL) {
-        P->kt = (infotype)malloc(strlen(X) + 1);
-        strcpy(P->kt, X);
-        P->listOrang = NULL;
-        P->nextKota = NULL;
+void Create_tree(Isi_Tree X, int Jml_Node){
+    int i;
+    infotype data;
+    fo(i, n){
+        printf("Masukkan data node ke-%d: ", i);
+        scanf(" %c", &data);  
+        X[i].info = data;
+        X[i].ps_fs = nil;
+        X[i].ps_nb = nil;
+        X[i].ps_pr = nil;
     }
-    return P;
-}
 
-addressOrang AlokasiOrang(infotype X) {
-    addressOrang P = (addressOrang)malloc(sizeof(Orang));
-    if (P != NULL) {
-        P->nm = (infotype)malloc(strlen(X) + 1);
-        strcpy(P->nm, X);
-        P->nextOrang = NULL;
-    }
-    return P;
-}
+    fo(i, n){
+        int child;
+        printf("Masukkan child pertama dari %c (0 jika tidak ada): ", X[i].info);
+        scanf("%d", &child);
+        if(child != 0){
+            X[i].ps_fs = child;
+            X[child].ps_pr = i;
 
-void InsertLastKota(List *L, infotype namaKota) {
-    addressKota P = AlokasiKota(namaKota);
-    if (P != NULL) {
-        if (L->First == NULL) {
-            L->First = P;
-        } else {
-            addressKota last = L->First;
-            while (last->nextKota != NULL) {
-                last = last->nextKota;
+            int sibling = child;
+            while(1){
+                int next_sibling;
+                printf("Masukkan next sibling dari %c (0 jika tidak ada): ", X[sibling].info);
+                scanf("%d", &next_sibling);
+                if(next_sibling == 0)
+                    break;
+                X[sibling].ps_nb = next_sibling;
+                X[next_sibling].ps_pr = i;
+                sibling = next_sibling;
             }
-            last->nextKota = P;
         }
     }
 }
 
-void InsertFirstKota(List *L, infotype namaKota) {
-    addressKota P = AlokasiKota(namaKota);
-    if (P != NULL) {
-        P->nextKota = L->First;
-        L->First = P;
+boolean IsEmpty (Isi_Tree P){
+    return (P[1].info == '\0');
+}
+
+void PreOrder(Isi_Tree P) {
+    e return;
+
+    int stack[100];
+    int top = -1;
+
+    stack[++top] = 1;
+
+    while (top != -1) {
+        int curr = stack[top--];
+        printf("%c ", P[curr].info);
+
+        
+        int child = P[curr].ps_fs;
+        int children[100];
+        int n = 0;
+
+        while (child != nil) {
+            children[n++] = child;
+            child = P[child].ps_nb;
+        }
+
+        for (int i = n - 1; i >= 0; i--) {
+            stack[++top] = children[i];
+        }
     }
 }
 
-void InsertLastOrang(addressKota kota, infotype namaOrang) {
-    addressOrang P = AlokasiOrang(namaOrang);
-    if (P != NULL) {
-        if (kota->listOrang == NULL) {
-            kota->listOrang = P;
-        } else {
-            addressOrang last = kota->listOrang;
-            while (last->nextOrang != NULL) {
-                last = last->nextOrang;
+
+void InOrder(Isi_Tree P) {
+    e return;
+
+    typedef struct {
+        int idx;
+        int stage; 
+    } StackItem;
+
+    StackItem stack[100];
+    int top = -1;
+
+    stack[++top] = (StackItem){1, 0};
+
+    while (top != -1) {
+        StackItem *curr = &stack[top];
+
+        if (curr->stage == 0) {
+          
+            curr->stage = 1;
+            int left = P[curr->idx].ps_fs;
+            if (left != nil) {
+                stack[++top] = (StackItem){left, 0};
             }
-            last->nextOrang = P;
+        } else if (curr->stage == 1) {
+        
+            curr->stage = 2;
+            printf("%c ", P[curr->idx].info);
+           
+            int fs = P[curr->idx].ps_fs;
+            if (fs != nil) {
+                int right = P[fs].ps_nb; 
+                if (right != nil)
+                    stack[++top] = (StackItem){right, 0};
+            }
+        } else {
+            top--;
         }
     }
 }
 
-void InsertFirstOrang(addressKota kota, infotype namaOrang) {
-    addressOrang P = AlokasiOrang(namaOrang);
-    if (P != NULL) {
-        P->nextOrang = kota->listOrang;
-        kota->listOrang = P;
+
+
+void PostOrder(Isi_Tree P) {
+    e return;
+
+    typedef struct {
+        int idx;
+        int visited;
+    } StackItem;
+
+    StackItem stack[100];
+    int top = -1;
+
+    stack[++top] = (StackItem){1, 0};
+
+    while (top != -1) {
+        StackItem *curr = &stack[top];
+
+        if (curr->visited == 0) {
+            curr->visited = 1;
+
+            int child = P[curr->idx].ps_fs;
+            int children[100];
+            int n = 0;
+
+            while (child != nil) {
+                children[n++] = child;
+                child = P[child].ps_nb;
+            }
+
+            for (int i = n - 1; i >= 0; i--) {
+                stack[++top] = (StackItem){children[i], 0};
+            }
+        } else {
+            printf("%c ", P[curr->idx].info);
+            top--;
+        }
     }
 }
 
-void TampilList(List L) {
-    addressKota K = L.First;
-    while (K != NULL) {
-        printf("Kota: %s\n", K->kt);
-        addressOrang O = K->listOrang;
-        while (O != NULL) {
-            printf("  - %s\n", O->nm);
-            O = O->nextOrang;
-        }
-        K = K->nextKota;
+
+void Level_order(Isi_Tree X, int Maks_node){
+    for(int i = 1; i <= Maks_node; i++){
+        printf("%c ", X[i].info);
     }
 }
 
-void DealokasiList(List *L) {
-    addressKota K = L->First;
-    while (K != NULL) {
-        addressKota tempK = K;
-        addressOrang O = K->listOrang;
-        while (O != NULL) {
-            addressOrang tempO = O;
-            O = O->nextOrang;
-            free(tempO->nm);
-            free(tempO);
+void PrintTree (Isi_Tree P){
+    printf("Isi tree dalam Level Order:\n");
+    int i;
+    for(i = 1; i <= jml_maks; i++){
+        if(P[i].info != '\0'){
+            printf("[%d] Info: %c, fs: %d, nb: %d, pr: %d\n", i, P[i].info, P[i].ps_fs, P[i].ps_nb, P[i].ps_pr);
         }
-        K = K->nextKota;
-        free(tempK->kt);
-        free(tempK);
     }
-    L->First = NULL;
 }
 
-void HitungTotal(List L) {
-    addressKota P = L.First;
-    int totalKota = 0;
-    int totalNama = 0;
+boolean Search (Isi_Tree P, infotype X){
+    for(int i = 1; i <= jml_maks; i++){
+        if(P[i].info == X)
+            return true;
+    }
+    return false;
+}
 
-    while (P != NULL) {
-        totalKota++;
+int nbElmt (Isi_Tree P){
+    int count = 0;
+    for(int i = 1; i <= jml_maks; i++){
+        if(P[i].info != '\0')
+            count++;
+    }
+    return count;
+}
 
-        int jumlahOrang = 0;
-        addressOrang O = P->listOrang;
-        while (O != NULL) {
-            jumlahOrang++;
-            totalNama++;
-            O = O->nextOrang;
+int nbDaun (Isi_Tree P){
+    int count = 0;
+    for(int i = 1; i <= jml_maks; i++){
+        if(P[i].info != '\0' && P[i].ps_fs == nil)
+            count++;
+    }
+    return count;
+}
+
+int Level (Isi_Tree P, infotype X){
+    int idx = -1;
+    for(int i = 1; i <= jml_maks; i++){
+        if(P[i].info == X){
+            idx = i;
+            break;
+        }
+    }
+    if(idx == -1)
+        return -1;
+
+    int level = 0;
+    while(P[idx].ps_pr != nil){
+        idx = P[idx].ps_pr;
+        level++;
+    }
+    return level;
+}
+
+int Depth (Isi_Tree P){
+    int max_depth = 0;
+    for(int i = 1; i <= jml_maks; i++){
+        if(P[i].info != '\0'){
+            int depth = 0, idx = i;
+            while(P[idx].ps_pr != nil){
+                idx = P[idx].ps_pr;
+                depth++;
+            }
+            if(depth > max_depth)
+                max_depth = depth;
+        }
+    }
+    return max_depth;
+}
+
+int Max (infotype Data1, infotype Data2){
+    return (Data1 > Data2) ? Data1 : Data2;
+}
+
+void PrintVisualTree(Isi_Tree P, int idx, int depth){
+    if(idx != nil && P[idx].info != '\0'){
+        for(int i = 0; i < depth; i++){
+            printf("|--");  
+        }
+        printf("%c\n", P[idx].info);
+
+        if(P[idx].ps_fs != nil){
+            PrintVisualTree(P, P[idx].ps_fs, depth + 1);
         }
 
-        printf("Jumlah nama di kota '%s' = %d\n", P->kt, jumlahOrang);
-        P = P->nextKota;
+        if(P[idx].ps_nb != nil){
+            PrintVisualTree(P, P[idx].ps_nb, depth);
+        }
     }
+}
 
-    printf("\nTotal Kota : %d\n", totalKota);
-    printf("Total Nama : %d\n", totalNama);
+void StartPrintVisualTree(Isi_Tree P){
+    if (!IsEmpty(P)){
+        PrintVisualTree(P, 1, 0); 
+    }
 }

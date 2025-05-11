@@ -2,87 +2,56 @@
 #include <string.h>
 #include "header.h"
 
+
 int main() {
-    List dataKota;
-    CreateListKota(&dataKota);
+    Isi_Tree T;
+    int jumlahNode;
 
-    int pilihan;
-    char buffer[100];
-    char namaKota[100], namaOrang[100];
-    addressKota kotaDipilih = NULL;
+    for(int i = 0; i <= jml_maks; i++){
+        T[i].info = '\0';
+        T[i].ps_fs = nil;
+        T[i].ps_nb = nil;
+        T[i].ps_pr = nil;
+    }
 
-    do {
-        printf("\n=== MENU ===\n");
-        printf("1. Tambah Kota (Akhir)\n");
-        printf("2. Tambah Kota (Awal)\n");
-        printf("3. Tambah Orang ke Kota (Akhir)\n");
-        printf("4. Tambah Orang ke Kota (Awal)\n");
-        printf("5. Tampilkan Seluruh Kota dan Orang\n");
-        printf("6. Tampilkan Total Kota & Nama\n");
-        printf("7. Keluar\n");
-        printf("Pilihan: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &pilihan);
+    printf("Masukkan jumlah node: ");
+    scanf("%d", &jumlahNode);
 
-        switch (pilihan) {
-            case 1:
-                printf("Masukkan nama kota: ");
-                fgets(namaKota, sizeof(namaKota), stdin);
-                namaKota[strcspn(namaKota, "\n")] = 0;
-                InsertLastKota(&dataKota, namaKota);
-                break;
+    Create_tree(T, jumlahNode);
 
-            case 2:
-                printf("Masukkan nama kota: ");
-                fgets(namaKota, sizeof(namaKota), stdin);
-                namaKota[strcspn(namaKota, "\n")] = 0;
-                InsertFirstKota(&dataKota, namaKota);
-                break;
+    printf("\n=== Print Visual Tree ===\n");
+    StartPrintVisualTree(T);
 
-            case 3:
-            case 4:
-                printf("Masukkan nama kota tempat orang ditambahkan: ");
-                fgets(namaKota, sizeof(namaKota), stdin);
-                namaKota[strcspn(namaKota, "\n")] = 0;
+    printf("\n=== PreOrder Traversal ===\n");
+    PreOrder(T);
 
-                kotaDipilih = dataKota.First;
-                while (kotaDipilih != NULL && strcmp(kotaDipilih->kt, namaKota) != 0) {
-                    kotaDipilih = kotaDipilih->nextKota;
-                }
+    printf("\n\n=== InOrder Traversal ===\n");
+    InOrder(T);
 
-                if (kotaDipilih != NULL) {
-                    printf("Masukkan nama orang: ");
-                    fgets(namaOrang, sizeof(namaOrang), stdin);
-                    namaOrang[strcspn(namaOrang, "\n")] = 0;
+    printf("\n\n=== PostOrder Traversal ===\n");
+    PostOrder(T);
 
-                    if (pilihan == 3) {
-                        InsertLastOrang(kotaDipilih, namaOrang);
-                    } else {
-                        InsertFirstOrang(kotaDipilih, namaOrang);
-                    }
-                } else {
-                    printf("Kota tidak ditemukan.\n");
-                }
-                break;
+    printf("\n\n=== Level Order Traversal ===\n");
+    Level_order(T, jumlahNode);
 
-            case 5:
-                TampilList(dataKota);
-                break;
+    printf("\n\n=== Detail Isi Tree ===\n");
+    PrintTree(T);
 
-            case 6:
-                HitungTotal(dataKota);
-                break;
 
-            case 7:
-                DealokasiList(&dataKota);
-                printf("Terima kasih!\n");
-                break;
+    printf("\nJumlah elemen: %d\n", nbElmt(T));
+    printf("Jumlah daun: %d\n", nbDaun(T));
+    printf("Kedalaman pohon (depth): %d\n", Depth(T));
 
-            default:
-                printf("Pilihan tidak valid.\n");
-        }
+    char cari;
+    printf("\nMasukkan data yang mau dicari: ");
+    scanf(" %c", &cari);
 
-    } while (pilihan != 7);
-
+    if(Search(T, cari)){
+        printf("%c ditemukan di tree.\n", cari);
+        printf("Level node %c adalah %d.\n", cari, Level(T, cari));
+    } else {
+        printf("%c tidak ditemukan di tree.\n", cari);
+    }
     return 0;
 }
+
