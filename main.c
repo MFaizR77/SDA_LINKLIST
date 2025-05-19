@@ -1,116 +1,145 @@
-#include <stdio.h>
-#include <string.h>
 #include "header.h"
 
+void initializeMorseTree(TreeNode* root) {
+    // Angka
+    insertToTree(root, ".", '1');      // 1 = .
+    insertToTree(root, "..", '2');     // 2 = ..
+    insertToTree(root, ".-", '3');     // 3 = .-
+    insertToTree(root, "...", '4');    // 4 = ...
+    insertToTree(root, "..-", '5');    // 5 = ..-
+    insertToTree(root, "-", '6');      // 6 = -
+    insertToTree(root, "-.", '7');     // 7 = -.
+    insertToTree(root, "--", '8');     // 8 = --
+    insertToTree(root, "-..", '9');    // 9 = -..
+    insertToTree(root, "-.-", '0');    // 0 = -.-
+
+    // Huruf 
+    insertToTree(root, ".-..", 'A');   // A = .-..
+    insertToTree(root, "-....", 'B');   // B = -...
+    insertToTree(root, "...-.", 'C');  // C = ...-.
+    insertToTree(root, ".--.", 'D');   // D = .--.
+    insertToTree(root, "...-", 'E');   // E = ...-
+    insertToTree(root, ".---", 'F');   // F = .---
+    insertToTree(root, "-.--", 'G');   // G = -.--
+    insertToTree(root, "--..", 'H');   // H = --..
+    insertToTree(root, "-...", 'I');   // I = -.... 
+    insertToTree(root, "--.-", 'J');   // J = --.-
+    insertToTree(root, "---.", 'K');   // K = ---.
+    insertToTree(root, "----", 'L');   // L = ----
+    insertToTree(root, "-..-.", 'M');  // M = -..-.
+    insertToTree(root, "-...-", 'N');  // N = -...-
+    insertToTree(root, "-..-", 'O');   // O = -..-
+    insertToTree(root, "-.-.", 'P');   // P = -.-.
+    insertToTree(root, ".-.", 'Q');    // Q = .-.
+    insertToTree(root, "..-.", 'R');   // R = ..-.
+    insertToTree(root, ".-.-", 'S');   // S = .-.-
+    insertToTree(root, "..--", 'T');  // T = ..-.- 
+    insertToTree(root, "---", 'U');    // U = ---
+    insertToTree(root, "...--", 'V');  // V = ...--
+    insertToTree(root, ".--", 'W');   // W = .-- 
+    insertToTree(root, "....-", 'X');  // X = ....-
+    insertToTree(root, "--.", 'Y');    // Y = --.
+    insertToTree(root, ".....", 'Z');  // Z = .....
+    insertToTree(root, "-..--", ' ');  // SPASI = -..--
+}
+
 int main() {
-    Isi_Tree T1, T2;
-    int jumlahNode1, jumlahNode2;
-    int menu;
-
+    TreeNode* root = createNode('\0');
+    initializeMorseTree(root);
     
-    for (int i = 0; i <= jml_maks; i++) {
-        T1[i].info = '\0';
-        T1[i].ps_fs = nil;
-        T1[i].ps_nb = nil;
-        T1[i].ps_pr = nil;
-
-        T2[i].info = '\0';
-        T2[i].ps_fs = nil;
-        T2[i].ps_nb = nil;
-        T2[i].ps_pr = nil;
-    }
-
-
-    printf("Masukkan jumlah node untuk Tree 1: ");
-    scanf("%d", &jumlahNode1);
-    Create_tree(T1, jumlahNode1);
-
+    int choice;
+    char input[100];
+    char output[1000] = {0};
+    
+    printf("Program Konversi Kode Morse Custom\n");
+    printf("==================================\n\n");
+    
     do {
-        printf("\n1. Traversal PreOrder");
-        printf("\n2. Traversal InOrder");
-        printf("\n3. Traversal PostOrder");
-        printf("\n4. Traversal Level Order");
-        printf("\n5. Print visualisasi Tree");
-        printf("\n6. Search node Tree");
-        printf("\n7. Jumlah Daun/Leaf");
-        printf("\n8. Mencari Level node Tree");
-        printf("\n9. Kedalaman Tree");
-        printf("\n10. Membandingkan 2 node Tree");
-        printf("\n11. Print Tree");
-        printf("\n12. Exit");
-        printf("\nPilih Menu: ");
-        scanf("%d", &menu);
-
-        switch(menu) {
-            case 1:
-                printf("\n=== PreOrder Traversal ===\n");
-                PreOrder(T1);
+        printf("Menu:\n");
+        printf("1. Terjemahkan dari teks ke kode Morse\n");
+        printf("2. Terjemahkan dari kode Morse ke teks\n");
+        printf("3. Tampilkan tabel kode Morse\n");
+        printf("4. Visualisasikan tree\n");
+        printf("5. Check Balance\n");
+        printf("0. Keluar\n");
+        printf("Pilihan Anda: ");
+        scanf("%d", &choice);
+        getchar(); // Membersihkan buffer
+        
+        switch (choice) {
+            case 1: {
+                printf("Masukkan teks (huruf kapital dan angka): ");
+                fgets(input, sizeof(input), stdin);
+                input[strcspn(input, "\n")] = '\0'; // Menghapus newline
+                
+                output[0] = '\0';
+                for (int i = 0; input[i] != '\0'; i++) {
+                    char morse[10] = {0};
+                    char path[10] = {0};
+                    
+                    if (isalpha(input[i])) {
+                        charToMorse(root, toupper(input[i]), morse, path, 0);
+                    } else if (isdigit(input[i])) {
+                        charToMorse(root, input[i], morse, path, 0);
+                    } else if (input[i] == ' ') {
+                        charToMorse(root, ' ', morse, path, 0);
+                    }
+                    
+                    if (morse[0] != '\0') {
+                        strcat(output, morse);
+                        strcat(output, " ");
+                    }
+                }
+                
+                printf("Hasil: %s\n\n", output);
                 break;
-            case 2:
-                printf("\n=== InOrder Traversal ===\n");
-                InOrder(T1);
+            }
+            case 2: {
+                printf("Masukkan kode Morse (gunakan . dan - dan pisahkan dengan spasi): ");
+                fgets(input, sizeof(input), stdin);
+                input[strcspn(input, "\n")] = '\0'; // Menghapus newline
+                
+                char* token = strtok(input, " ");
+                output[0] = '\0';
+                
+                while (token != NULL) {
+                    char c = morseToChar(root, token);
+                    if (c != '\0') {
+                        char str[2] = {c, '\0'};
+                        strcat(output, str);
+                    } else {
+                        strcat(output, "?");  // Karakter tidak dikenali
+                    }
+                    token = strtok(NULL, " ");
+                }
+                
+                printf("Hasil: %s\n\n", output);
                 break;
+            }
             case 3:
-                printf("\n=== PostOrder Traversal ===\n");
-                PostOrder(T1);
+                printMorseTable(root);
+                printf("\n");
                 break;
             case 4:
-                printf("\n=== Level Order Traversal ===\n");
-                Level_order(T1, jumlahNode1);
+                printf("\nVisualisasi Tree:\n");
+                printf("================\n");
+                printTree(root, 0);
+                printf("\n");
                 break;
-            case 5:
-                printf("\n=== Print Visual Tree ===\n");
-                StartPrintVisualTree(T1);
+            case 5: 
+                if (isBalanced(root))
+                printf("Tree Balance.\n\n");
+                else
+                printf("Tree tidak Balance.\n\n");
+                break;     
+            case 0:
+                printf("Terima kasih telah menggunakan program ini!\n");
                 break;
-            case 6: {
-                char cari;
-                printf("Masukkan data yang mau dicari: ");
-                scanf(" %c", &cari);
-                if(Search(T1, cari)) {
-                    printf("%c ditemukan di tree.\n", cari);
-                } else {
-                    printf("%c tidak ditemukan di tree.\n", cari);
-                }
-                break;
-            }
-            case 7:
-                printf("Jumlah daun: %d\n", nbDaun(T1));
-                break;
-            case 8: {
-                char cari;
-                printf("Masukkan data: ");
-                scanf(" %c", &cari);
-                printf("Level node %c adalah %d.\n", cari, Level(T1, cari));
-                break;
-            }
-            case 9:
-                printf("Kedalaman pohon (depth): %d\n", Depth(T1));
-                break;
-            case 10:{
-                printf("Masukkan jumlah node untuk Tree 2: ");
-                scanf("%d", &jumlahNode2);
-                Create_tree(T2, jumlahNode2);
-
-                int elmt1 = nbElmt(T1);
-                int elmt2 = nbElmt(T2);
-                int max = Max(elmt1, elmt2);
-
-                printf("Jumlah elemen Tree 1: %d\n", elmt1);
-                printf("Jumlah elemen Tree 2: %d\n", elmt2);
-                printf("Tree yang lebih besar memiliki %d node.\n", max);
-                break;
-            }   
-            case 11: 
-                PrintTree(T1);
-                break;
-            case 12:
-                printf("Keluar dari program.\n");
-                break;    
             default:
-                printf("Menu tidak valid.\n");
+                printf("Pilihan tidak valid. Silakan coba lagi.\n\n");
         }
-
-    } while(menu != 12);
-
+    } while (choice != 0);
+    
+    freeTree(root);
     return 0;
 }

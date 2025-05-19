@@ -1,264 +1,158 @@
 #include "header.h"
 #include <stdio.h>
 
-void Create_tree(Isi_Tree X, int Jml_Node){
-    int i;
-    infotype data;
-    fo(i, n){
-        printf("Masukkan data node ke-%d: ", i);
-        scanf(" %c", &data);  
-        X[i].info = data;
-        X[i].ps_fs = nil;
-        X[i].ps_nb = nil;
-        X[i].ps_pr = nil;
+
+TreeNode* createNode(char character) {
+    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
+    if (newNode == NULL) {
+        printf("Error: Memory allocation failed\n");
+        exit(1);
     }
-
-    fo(i, n){
-        int child;
-        printf("Masukkan child pertama dari %c (0 jika tidak ada): ", X[i].info);
-        scanf("%d", &child);
-        if(child != 0){
-            X[i].ps_fs = child;
-            X[child].ps_pr = i;
-
-            int sibling = child;
-            while(1){
-                int next_sibling;
-                printf("Masukkan next sibling dari %c (0 jika tidak ada): ", X[sibling].info);
-                scanf("%d", &next_sibling);
-                if(next_sibling == 0)
-                    break;
-                X[sibling].ps_nb = next_sibling;
-                X[next_sibling].ps_pr = i;
-                sibling = next_sibling;
-            }
-        }
-    }
-}
-
-boolean IsEmpty (Isi_Tree P){
-    return (P[1].info == '\0');
-}
-
-void PreOrder(Isi_Tree P) {
-    e return;
-
-    int stack[100];
-    int top = -1;
-
-    stack[++top] = 1;
-
-    while (top != -1) {
-        int curr = stack[top--];
-        printf("%c ", P[curr].info);
-
-        
-        int child = P[curr].ps_fs;
-        int children[100];
-        int n = 0;
-
-        while (child != nil) {
-            children[n++] = child;
-            child = P[child].ps_nb;
-        }
-
-        for (int i = n - 1; i >= 0; i--) {
-            stack[++top] = children[i];
-        }
-    }
+    newNode->character = character;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
 }
 
 
-void InOrder(Isi_Tree P) {
-    e return;
-
-    typedef struct {
-        int idx;
-        int stage; 
-    } StackItem;
-
-    StackItem stack[100];
-    int top = -1;
-
-    stack[++top] = (StackItem){1, 0};
-
-    while (top != -1) {
-        StackItem *curr = &stack[top];
-
-        if (curr->stage == 0) {
-          
-            curr->stage = 1;
-            int left = P[curr->idx].ps_fs;
-            if (left != nil) {
-                stack[++top] = (StackItem){left, 0};
+void insertToTree(TreeNode* root, const char* morse, char character) {
+    TreeNode* current = root;
+    
+    for (int i = 0; morse[i] != '\0'; i++) {
+        if (morse[i] == '.') {
+            if (current->left == NULL) {
+                current->left = createNode('\0');
             }
-        } else if (curr->stage == 1) {
-        
-            curr->stage = 2;
-            printf("%c ", P[curr->idx].info);
-           
-            int fs = P[curr->idx].ps_fs;
-            if (fs != nil) {
-                int right = P[fs].ps_nb; 
-                if (right != nil)
-                    stack[++top] = (StackItem){right, 0};
+            current = current->left;
+        } else if (morse[i] == '-') {
+            if (current->right == NULL) {
+                current->right = createNode('\0');
             }
+            current = current->right;
+        }
+    }
+    
+    current->character = character;
+}
+
+
+char morseToChar(TreeNode* root, const char* morse) {
+    TreeNode* current = root;
+    
+    for (int i = 0; morse[i] != '\0'; i++) {
+        if (morse[i] == '.') {
+            if (current->left == NULL) {
+                return '\0';
+            }
+            current = current->left;
+        } else if (morse[i] == '-') {
+            if (current->right == NULL) {
+                return '\0';
+            }
+            current = current->right;
         } else {
-            top--;
+            return '\0';  
         }
     }
+    
+    return current->character;
 }
 
 
-
-void PostOrder(Isi_Tree P) {
-    e return;
-
-    typedef struct {
-        int idx;
-        int visited;
-    } StackItem;
-
-    StackItem stack[100];
-    int top = -1;
-
-    stack[++top] = (StackItem){1, 0};
-
-    while (top != -1) {
-        StackItem *curr = &stack[top];
-
-        if (curr->visited == 0) {
-            curr->visited = 1;
-
-            int child = P[curr->idx].ps_fs;
-            int children[100];
-            int n = 0;
-
-            while (child != nil) {
-                children[n++] = child;
-                child = P[child].ps_nb;
-            }
-
-            for (int i = n - 1; i >= 0; i--) {
-                stack[++top] = (StackItem){children[i], 0};
-            }
-        } else {
-            printf("%c ", P[curr->idx].info);
-            top--;
-        }
+void charToMorse(TreeNode* root, char character, char* result, char* path, int depth) {
+    if (root == NULL) {
+        return;
     }
-}
-
-
-void Level_order(Isi_Tree X, int Maks_node){
-    for(int i = 1; i <= Maks_node; i++){
-        printf("%c ", X[i].info);
+    
+    if (root->character == character) {
+        path[depth] = '\0';
+        strcpy(result, path);
+        return;
     }
+    
+    path[depth] = '.';
+    charToMorse(root->left, character, result, path, depth + 1);
+    
+    path[depth] = '-';
+    charToMorse(root->right, character, result, path, depth + 1);
 }
 
-void PrintTree(Isi_Tree T) {
-    printf("\nSeluruh Node pada Non Binary Tree:\n");
-    for (int i = 1; i <= jml_maks; i++) {
-        if (T[i].info != '\0') {
-            printf("\n--> Indeks ke-%d", i);
-            printf("\n------------------------------------");
-            printf("\ninfo array ke %d     :    %c", i, T[i].info);
-            printf("\nfirst son array ke %d:    %d", i, T[i].ps_fs);
-            printf("\nnext brother array ke %d: %d", i, T[i].ps_nb);
-            printf("\nparent array ke %d   :    %d", i, T[i].ps_pr);
-            printf("\n------------------------------------");
-        }
+
+void freeTree(TreeNode* root) {
+    if (root == NULL) {
+        return;
     }
-    printf("\nKlik apapun untuk melanjutkan!\n");
-    getchar(); getchar();  
+    
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
 }
 
-boolean Search (Isi_Tree P, infotype X){
-    for(int i = 1; i <= jml_maks; i++){
-        if(P[i].info == X)
-            return true;
+
+void printTree(TreeNode* root, int level) {
+    if (root == NULL) {
+        return;
     }
-    return false;
-}
-
-int nbElmt (Isi_Tree P){
-    int count = 0;
-    for(int i = 1; i <= jml_maks; i++){
-        if(P[i].info != '\0')
-            count++;
+    
+    printTree(root->right, level + 1);
+    
+    for (int i = 0; i < level; i++) {
+        printf("    ");
     }
-    return count;
-}
-
-int nbDaun (Isi_Tree P){
-    int count = 0;
-    for(int i = 1; i <= jml_maks; i++){
-        if(P[i].info != '\0' && P[i].ps_fs == nil)
-            count++;
+    
+    if (root->character != '\0') {
+        printf("%c\n", root->character);
+    } else {
+        printf("*\n");
     }
-    return count;
+    
+    printTree(root->left, level + 1);
 }
 
-int Level (Isi_Tree P, infotype X){
-    int idx = -1;
-    for(int i = 1; i <= jml_maks; i++){
-        if(P[i].info == X){
-            idx = i;
-            break;
-        }
+
+void printMorseTable(TreeNode* root) {
+    printf("\nTabel Kode Morse:\n");
+    printf("==================\n");
+    
+    for (int i = 0; i <= 9; i++) {
+        char morse[10] = {0};
+        char path[10] = {0};
+        charToMorse(root, '0' + i, morse, path, 0);
+        printf("%d: %s\n", i, morse);
     }
-    if(idx == -1)
-        return -1;
-
-    int level = 0;
-    while(P[idx].ps_pr != nil){
-        idx = P[idx].ps_pr;
-        level++;
+    
+    printf("\n");
+    
+    for (char c = 'A'; c <= 'Z'; c++) {
+        char morse[10] = {0};
+        char path[10] = {0};
+        charToMorse(root, c, morse, path, 0);
+        printf("%c: %s\n", c, morse);
     }
-    return level;
+    
+    char morse[10] = {0};
+    char path[10] = {0};
+    charToMorse(root, ' ', morse, path, 0);
+    printf("SPASI: %s\n", morse);
 }
 
-int Depth (Isi_Tree P){
-    int max_depth = 0;
-    for(int i = 1; i <= jml_maks; i++){
-        if(P[i].info != '\0'){
-            int depth = 0, idx = i;
-            while(P[idx].ps_pr != nil){
-                idx = P[idx].ps_pr;
-                depth++;
-            }
-            if(depth > max_depth)
-                max_depth = depth;
-        }
+int checkHeight(TreeNode* node, boolean* isBalanced) {
+    if (node == NULL) return 0;
+
+    int leftHeight = checkHeight(node->left, isBalanced);
+    int rightHeight = checkHeight(node->right, isBalanced);
+
+    if (abs(leftHeight - rightHeight) > 1) {
+        *isBalanced = false;
     }
-    return max_depth;
+
+    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
 }
 
-int Max (infotype Data1, infotype Data2){
-    return (Data1 > Data2) ? Data1 : Data2;
+
+boolean isBalanced(TreeNode* root) {
+    boolean balanced = true;
+    checkHeight(root, &balanced);
+    return balanced;
 }
-
-void PrintVisualTree(Isi_Tree P, int idx, int depth){
-    if(idx != nil && P[idx].info != '\0'){
-        for(int i = 0; i < depth; i++){
-            printf("|--");  
-        }
-        printf("%c\n", P[idx].info);
-
-        if(P[idx].ps_fs != nil){
-            PrintVisualTree(P, P[idx].ps_fs, depth + 1);
-        }
-
-        if(P[idx].ps_nb != nil){
-            PrintVisualTree(P, P[idx].ps_nb, depth);
-        }
-    }
-}
-
-void StartPrintVisualTree(Isi_Tree P){
-    if (!IsEmpty(P)){
-        PrintVisualTree(P, 1, 0); 
-    }
-}
-
 
